@@ -1,12 +1,12 @@
 defmodule ShortestChain do
-  @doc """
+  @doc ~S"""
   suppose our graph is represented as a Map with "users" as a keys and their friends as a list in value
 
-     _____:a_______
-    /      \   \   \
-   :h  :e--:b--:c--:d
-    |  |     \_____/
-   :g--:f--:i
+        _____:a_______
+       /      \   \   \
+      :h  :e--:b--:c--:d
+       |  |     \_____/
+      :g--:f--:i
 
   ## Examples
 
