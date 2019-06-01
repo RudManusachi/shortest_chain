@@ -2,26 +2,28 @@ defmodule ShortestChain do
   @doc """
   suppose our graph is represented as a Map with "users" as a keys and their friends as a list in value
 
-         _:a______
-        /  |  \   \
-  :e--:b--:c  :d  :h
-   |   \______/    |
-   |               |
-  :f------:g--------
+     _____:a_______
+    /      \   \   \
+   :h  :e--:b--:c--:d
+    |  |     \_____/
+   :g--:f--:i
 
-  graph = %{
-    :a => [:b, :c, :d, :h],
-    :b => [:a, :c, :d, :e],
-    :c => [:a, :b],
-    :d => [:a, :b],
-    :e => [:b, :f],
-    :f => [:e, :g, :i],
-    :g => [:f, :h],
-    :h => [:a, :g],
-    :i => [:f]
-  }
+  ## Examples
 
-  find_min_path(graph, :a, :e) # => [:a, :b, :e]
+      iex> graph = %{
+      ...> :a => [:b, :c, :d, :h],
+      ...> :b => [:a, :c, :d, :e],
+      ...> :c => [:a, :b],
+      ...> :d => [:a, :b],
+      ...> :e => [:b, :f],
+      ...> :f => [:e, :g, :i],
+      ...> :g => [:f, :h],
+      ...> :h => [:a, :g],
+      ...> :i => [:f]
+      ...> }
+      iex>
+      iex> ShortestChain.find_min_path(graph, :a, :e)
+      [:a, :b, :e]
   """
   def find_min_path(graph, a, b), do: find_min_path(graph, a, b, [a])
 
@@ -43,39 +45,13 @@ defmodule ShortestChain do
 
       true ->
         new_friends
-        |> Enum.map(fn friend -> find_min_path(graph, friend, b, [friend | path]) end)
+        |> Task.async_stream(&find_min_path(graph, &1, b, [&1 | path]), ordered: false)
+        |> Stream.map(fn {:ok, path} -> path end)
         |> Enum.reduce(fn
           shortest_path, :no_new_friends -> shortest_path
           shortest_path, path when length(shortest_path) < length(path) -> shortest_path
           _shortest_path, path -> path
         end)
     end
-  end
-end
-
-ExUnit.start()
-
-defmodule ShortestChainTest do
-  use ExUnit.Case
-
-  @graph %{
-    :a => [:b, :c, :d, :h],
-    :b => [:a, :c, :d, :e],
-    :c => [:a, :b],
-    :d => [:a, :b],
-    :e => [:b, :f],
-    :f => [:e, :g, :i],
-    :g => [:f, :h],
-    :h => [:a, :g],
-    :i => [:f]
-  }
-
-  test "simple case" do
-    assert ShortestChain.find_min_path(@graph, :a, :b) == [:a, :b]
-  end
-
-  test "friend of friend" do
-    assert ShortestChain.find_min_path(@graph, :a, :i) == [:a, :b, :e, :f, :i]
-    assert ShortestChain.find_min_path(@graph, :a, :g) == [:a, :h, :g]
   end
 end
