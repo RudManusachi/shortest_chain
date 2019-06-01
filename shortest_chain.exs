@@ -1,4 +1,5 @@
 defmodule ShortestChain do
+  @type user() :: atom()
   @doc ~S"""
   suppose our graph is represented as a Map with "users" as a keys and their friends as a list in value
 
@@ -25,6 +26,7 @@ defmodule ShortestChain do
       iex> ShortestChain.find_min_path(graph, :a, :e)
       [:a, :b, :e]
   """
+  @spec find_min_path(%{required(user) => [user]}, user, user) :: [user] | :no_path
   def find_min_path(graph, a, b), do: find_min_path(graph, a, b, [a])
 
   def find_min_path(graph, a, b, path) do
