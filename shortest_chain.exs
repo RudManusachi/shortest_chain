@@ -27,14 +27,18 @@ defmodule ShortestChain do
 
   def find_min_path(graph, a, b, path) do
     # get the list of friends of `a` and leave only ones that are not in `path` yet (avoid cycling)
-    new_friends = Map.get(graph, a) -- path
+    new_friends =
+      graph
+      |> Map.get(a)
+      |> MapSet.new()
+      |> MapSet.difference(MapSet.new(path))
 
     cond do
       # base case
       b in new_friends ->
         Enum.reverse([b | path])
 
-      [] == new_friends ->
+      MapSet.size(new_friends) == 0 ->
         :no_new_friends
 
       true ->
