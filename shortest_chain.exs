@@ -41,14 +41,14 @@ defmodule ShortestChain do
         Enum.reverse([b | path])
 
       MapSet.size(new_friends) == 0 ->
-        :no_new_friends
+        :no_path
 
       true ->
         new_friends
         |> Task.async_stream(&find_min_path(graph, &1, b, [&1 | path]), ordered: false)
         |> Stream.map(fn {:ok, path} -> path end)
         |> Enum.reduce(fn
-          shortest_path, :no_new_friends -> shortest_path
+          shortest_path, :no_path -> shortest_path
           shortest_path, path when length(shortest_path) < length(path) -> shortest_path
           _shortest_path, path -> path
         end)

@@ -24,4 +24,8 @@ defmodule ShortestChainTest do
     assert ShortestChain.find_min_path(@graph, :a, :i) == [:a, :b, :e, :f, :i]
     assert ShortestChain.find_min_path(@graph, :a, :g) == [:a, :h, :g]
   end
+
+  test "no friends" do
+    assert ShortestChain.find_min_path(%{:a => [], :b => []}, :a, :b) == :no_path
+  end
 end
