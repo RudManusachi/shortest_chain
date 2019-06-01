@@ -4,7 +4,7 @@ defmodule ShortestChain do
 
         _____:a_______
        /      \   \   \
-      :h  :e--:b--:c--:d
+      :h  :e--:b--:c  :d
        |  |     \_____/
       :g--:f--:i
 
